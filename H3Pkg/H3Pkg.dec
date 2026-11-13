@@ -1,0 +1,45 @@
+#
+#  Copyright (c) 2018, Linaro Limited. All rights reserved.
+#
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001a
+  PACKAGE_NAME                   = H3Pkg
+  PACKAGE_GUID                   = 5aa1bb1c-f8c5-4fd2-93e2-61b2dc012674
+  PACKAGE_VERSION                = 0.1
+
+################################################################################
+#
+# Include Section - list of Include Paths that are provided by this package.
+#                   Comments are used for Keywords and Module Types.
+#
+# Supported Module Types:
+#  BASE SEC PEI_CORE PEIM DXE_CORE DXE_DRIVER DXE_RUNTIME_DRIVER DXE_SMM_DRIVER DXE_SAL_DRIVER UEFI_DRIVER UEFI_APPLICATION
+#
+################################################################################
+[Includes.common]
+  Include                        # Root include for the package
+
+[Guids.common]
+  gH3PkgTokenSpaceGuid        = { 0x172e8bc2, 0xc793, 0x4df1, { 0xaa, 0x13, 0x67, 0xff, 0xd6, 0xbd, 0x8c, 0xae } }
+
+[PcdsFixedAtBuild.common]
+  # Memory allocation
+  gH3PkgTokenSpaceGuid.PcdUefiMemPoolBase|0|UINT64|0x00000a106
+  gH3PkgTokenSpaceGuid.PcdUefiMemPoolSize|0|UINT32|0x00000a107
+
+  # Simple FrameBuffer
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferAddress|0x7BF64480|UINT32|0x0000a400
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferWidth|0|UINT32|0x0000a401
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferHeight|0|UINT32|0x0000a402
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferPixelBpp|32|UINT32|0x0000a403
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferVisibleWidth|0|UINT32|0x0000a404
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferVisibleHeight|0|UINT32|0x0000a405

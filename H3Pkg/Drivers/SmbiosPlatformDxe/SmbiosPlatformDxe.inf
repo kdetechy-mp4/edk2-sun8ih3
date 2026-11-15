@@ -37,7 +37,7 @@
   DebugLib
 
 [Guids.common]
-  gAllwinnerTokenSpaceGuid
+  gH3PkgTokenSpaceGuid
   
 [Protocols]
   gEfiSmbiosProtocolGuid

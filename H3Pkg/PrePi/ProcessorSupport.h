@@ -5,6 +5,6 @@
 #define CACHE_LINE 64
 
 extern void ArmDeInitialize(void);
-extern void ArmCleanInvalidateCacheRange(addr_t start, size_t len);
+extern void ArmCleanInvalidateCacheRange(EFI_PHYSICAL_ADDRESS start, UINTN len);
 
 #endif

@@ -24,4 +24,4 @@
 [Protocols]
 
 [FixedPcd]
-  gSunxiTokenSpaceGuid.UartBase
+  gH3PkgTokenSpaceGuid.PcdSunxiUartBase

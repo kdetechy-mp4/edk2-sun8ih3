@@ -105,6 +105,11 @@ DisplayQueryMode(
     OUT UINTN *SizeOfInfo, OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION **Info)
 {
   EFI_STATUS Status;
+
+  if (ModeNumber >= This->Mode->MaxMode) {
+    return EFI_INVALID_PARAMETER;
+  }
+
   Status = gBS->AllocatePool(
       EfiBootServicesData, sizeof(EFI_GRAPHICS_OUTPUT_MODE_INFORMATION),
       (VOID **)Info);
@@ -152,6 +157,11 @@ DisplayBlt(
       mFrameBufferBltLibConfigure, BltBuffer, BltOperation, SourceX, SourceY,
       DestinationX, DestinationY, Width, Height, Delta);
   gBS->RestoreTPL(Tpl);
+
+  WriteBackDataCacheRange (
+    (VOID *)(UINTN)This->Mode->FrameBufferBase,
+                           This->Mode->FrameBufferSize
+  );
 
   return RETURN_ERROR(Status) ? EFI_INVALID_PARAMETER : EFI_SUCCESS;
 }

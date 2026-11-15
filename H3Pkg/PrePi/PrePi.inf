@@ -4,6 +4,7 @@
   FILE_GUID                      = 556A7392-5DF4-4067-B85C-AFDA4CDA586D
   MODULE_TYPE                    = SEC
   VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = _ModuleEntryPoint
 
 [Sources.common]
   Pi.c
@@ -36,7 +37,6 @@
   SerialPortLib
   ExtractGuidedSectionLib
   LzmaDecompressLib
-  DebugAgentLib
   PrePiLib
   ArmPlatformLib
   MemoryAllocationLib
@@ -55,11 +55,7 @@
 [FeaturePcd]
   gEmbeddedTokenSpaceGuid.PcdPrePiProduceMemoryTypeInformationHob
 
-[Pcd]
-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString
-
 [FixedPcd]
-  gArmTokenSpaceGuid.PcdCpuVectorBaseAddress
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate
   gEmbeddedTokenSpaceGuid.PcdPrePiStackBase
   gEmbeddedTokenSpaceGuid.PcdPrePiStackSize
@@ -67,8 +63,6 @@
   gArmTokenSpaceGuid.PcdFvSize
   gArmTokenSpaceGuid.PcdFdBaseAddress
   gArmTokenSpaceGuid.PcdFdSize
-  gArmPlatformTokenSpaceGuid.PcdCPUCorePrimaryStackSize
-  gArmPlatformTokenSpaceGuid.PcdCPUCoreSecondaryStackSize
   gArmPlatformTokenSpaceGuid.PcdCoreCount
 
   gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize

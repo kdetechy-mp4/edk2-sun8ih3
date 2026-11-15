@@ -187,7 +187,7 @@ RETURN_STATUS EFIAPI SerialPortSetAttributes(
   // serial port is initialized by SPL
 
   // Enable FIFO to prevent losing data on input
-  MmioOr32(UART_FCR, UART_FCR_ENABLE_FIFO);
+  MmioWrite32(UART_FCR, UART_FCR_ENABLE_FIFO);
 
   return RETURN_SUCCESS;
 }

@@ -35,7 +35,7 @@
 
 [Sources.common]
   H3Pkg.c
-  ArmPlaformHelper.S
+  ArmPlatformHelper.S
   H3PkgMem.c
 
 [FixedPcd]

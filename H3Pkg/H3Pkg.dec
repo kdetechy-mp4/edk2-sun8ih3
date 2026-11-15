@@ -30,16 +30,26 @@
 
 [Guids.common]
   gH3PkgTokenSpaceGuid        = { 0x172e8bc2, 0xc793, 0x4df1, { 0xaa, 0x13, 0x67, 0xff, 0xd6, 0xbd, 0x8c, 0xae } }
+  gSunxiTokenSpaceGuid        = { 0x61521ade, 0x87d6, 0x4fd3, { 0x98, 0x4e, 0x6f, 0x05, 0xef, 0x47, 0x98, 0xef } }
 
 [PcdsFixedAtBuild.common]
   # Memory allocation
   gH3PkgTokenSpaceGuid.PcdUefiMemPoolBase|0|UINT64|0x00000a106
   gH3PkgTokenSpaceGuid.PcdUefiMemPoolSize|0|UINT32|0x00000a107
 
-  # Simple FrameBuffer
-  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferAddress|0x7BF64480|UINT32|0x0000a400
-  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferWidth|0|UINT32|0x0000a401
-  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferHeight|0|UINT32|0x0000a402
+  # Sunxi Hardware
+  gH3PkgTokenSpaceGuid.PcdSunxiUartBase|0x01C28000|UINT32|0x0000a200
+  gH3PkgTokenSpaceGuid.PcdSunxiTimerBase|0x01C20C00|UINT32|0x0000a201
+
+  # SMBIOS
+  gH3PkgTokenSpaceGuid.PcdSmbiosSystemModel|"Orange Pi PC Plus"|VOID*|0x0000a300
+  gH3PkgTokenSpaceGuid.PcdSmbiosSystemRetailModel|"sun8iw7p1"|VOID*|0x0000a301
+  gH3PkgTokenSpaceGuid.PcdSmbiosProcessorModel|"sun8iw7p1"|VOID*|0x0000a302
+
+  # Simple FrameBuffer (matches upstream U-Boot bdinfo: 0x7e000000, 1280x720x32)
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferAddress|0x7E000000|UINT32|0x0000a400
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferWidth|1280|UINT32|0x0000a401
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferHeight|720|UINT32|0x0000a402
   gH3PkgTokenSpaceGuid.PcdMipiFrameBufferPixelBpp|32|UINT32|0x0000a403
-  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferVisibleWidth|0|UINT32|0x0000a404
-  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferVisibleHeight|0|UINT32|0x0000a405
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferVisibleWidth|1280|UINT32|0x0000a404
+  gH3PkgTokenSpaceGuid.PcdMipiFrameBufferVisibleHeight|720|UINT32|0x0000a405

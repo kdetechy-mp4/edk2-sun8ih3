@@ -1,3 +1,5 @@
+#include <AsmMacroLib.h>
+
 // ARM Platform support for bootstrapping LK
 
 	.set CTRL_M_BIT,	 (1 << 0)
@@ -10,7 +12,6 @@
 
 	GCC_ASM_EXPORT (ArmDeInitialize)
 	GCC_ASM_EXPORT (ArmCleanInvalidateCacheRange)
-	GCC_ASM_EXPORT (ArmReadCntFrq2)
 
 ArmDeInitialize:
 	// Disable Branch Prediction
@@ -111,7 +112,3 @@ ArmCleanInvalidateCacheRange0:
 	dsb
 
 	bx		lr
-
-ArmReadCntFrq:
-	mrc    p15, 0, r0, c14, c0, 0    // Read CNTFRQ
-	bx     lr

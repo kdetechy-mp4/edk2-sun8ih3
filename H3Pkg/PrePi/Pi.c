@@ -65,6 +65,17 @@ STATIC VOID UartInit(VOID)
        (CHAR16 *)PcdGetPtr(PcdFirmwareVersionString), __TIME__, __DATE__));
 }
 
+STATIC VOID FbProgressBar(UINT32 StartRow, UINT32 Rows, UINT32 ArgbColor)
+{
+  volatile UINT32 *Fb = (volatile UINT32 *)(UINTN)FixedPcdGet32(PcdMipiFrameBufferAddress);
+  UINT32 Width = FixedPcdGet32(PcdMipiFrameBufferWidth);
+  UINT32 Count = Rows * Width;
+  Fb += StartRow * Width;
+  while (Count--) {
+    *Fb++ = ArgbColor;
+  }
+}
+
 VOID Main(IN VOID *StackBase, IN UINTN StackSize)
 {
 
@@ -89,17 +100,18 @@ VOID Main(IN VOID *StackBase, IN UINTN StackSize)
   UartInit();
 
   // Declare UEFI region
-  MemoryBase     = FixedPcdGet32(PcdSystemMemoryBase);
-  MemorySize     = FixedPcdGet32(PcdSystemMemorySize);
+  MemoryBase     = PcdGet64(PcdSystemMemoryBase);
+  MemorySize     = PcdGet64(PcdSystemMemorySize);
   UefiMemoryBase = FixedPcdGet32(PcdUefiMemPoolBase);
   UefiMemorySize = FixedPcdGet32(PcdUefiMemPoolSize);
-  StackBase      = (VOID *)(UefiMemoryBase + UefiMemorySize - StackSize);
 
   DEBUG(
-      (EFI_D_INFO | EFI_D_LOAD,
-       "UEFI Memory Base = 0x%llx, Size = 0x%llx, Stack Base = 0x%llx, Stack "
-       "Size = 0x%llx\n",
-       UefiMemoryBase, UefiMemorySize, StackBase, StackSize));
+    (EFI_D_INFO | EFI_D_LOAD,
+     "UEFI Memory Base = 0x%x, Size = 0x%x, Stack Base = 0x%x, Stack "
+     "Size = 0x%x\n",
+     (UINT32)(UINTN)UefiMemoryBase, (UINT32)(UINTN)UefiMemorySize,
+     (UINT32)(UINTN)StackBase, (UINT32)(UINTN)StackSize));
+
 
   // Set up HOB
   HobList = HobConstructor(
@@ -107,10 +119,6 @@ VOID Main(IN VOID *StackBase, IN UINTN StackSize)
       StackBase);
 
   PrePeiSetHobList(HobList);
-
-  // Invalidate cache
-  InvalidateDataCacheRange(
-      (VOID *)(UINTN)PcdGet64(PcdFdBaseAddress), PcdGet32(PcdFdSize));
 
   // Initialize MMU
   Status = MemoryPeim(UefiMemoryBase, UefiMemorySize);

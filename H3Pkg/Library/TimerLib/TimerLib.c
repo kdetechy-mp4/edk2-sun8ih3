@@ -54,7 +54,7 @@ UINTN
 EFIAPI
 MicroSecondDelay(
   IN UINTN MicroSeconds
-  )
+)
 {
   UINTN LeftTicks;
   UINTN Last;
@@ -67,21 +67,15 @@ MicroSecondDelay(
   while (LeftTicks > 0)
   {
     Now = ~MmioRead32(SUNXI_TIMER_BASE + SUNXI_TIMER_VAL(DELAY_TIMER));
-    if (Now > Last)
+    if (Now >= Last)
     {
-      // detect overflow
-      if (LeftTicks - (Now - Last) > LeftTicks)
-        LeftTicks = 0;
-      else
-        LeftTicks -= Now - Last;
+      UINTN Delta = Now - Last;
+      LeftTicks = (Delta >= LeftTicks) ? 0 : (LeftTicks - Delta);
     }
     else
     {
-      // detect overflow
-      if (LeftTicks - (0xffffffff - Last + Now))
-        LeftTicks = 0;
-      else
-        LeftTicks -= 0xffffffff - Last + Now;
+      UINTN Delta = (0xffffffffU - Last) + 1U + Now;
+      LeftTicks = (Delta >= LeftTicks) ? 0 : (LeftTicks - Delta);
     }
     Last = Now;
   }

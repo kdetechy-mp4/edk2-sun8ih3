@@ -17,3 +17,6 @@
 [LibraryClasses]
   BaseLib
   IoLib
+
+[FixedPcd]
+  gH3PkgTokenSpaceGuid.PcdSunxiTimerBase

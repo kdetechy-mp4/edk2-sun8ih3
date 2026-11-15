@@ -8,7 +8,7 @@
  */
 #pragma once
 
-#define SUNXI_TIMER_BASE (FixedPcdGet32(TimerBase))
+#define SUNXI_TIMER_BASE (FixedPcdGet32(PcdSunxiTimerBase))
 
 #define SUNXI_TIMER_NUM_TIMERS 6
 

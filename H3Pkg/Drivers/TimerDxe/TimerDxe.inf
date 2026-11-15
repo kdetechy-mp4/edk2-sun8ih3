@@ -32,8 +32,10 @@
   gEfiTimerArchProtocolGuid           ## PRODUCES
 
 [Pcd]
-  gEmbeddedTokenSpaceGuid.PcdTimerPeriod
-  gSunxiTokenSpaceGuid.TimerBase
 
 [Depex]
   gHardwareInterruptProtocolGuid
+
+[FixedPcd]
+  gH3PkgTokenSpaceGuid.PcdSunxiTimerBase
+  gEmbeddedTokenSpaceGuid.PcdTimerPeriod

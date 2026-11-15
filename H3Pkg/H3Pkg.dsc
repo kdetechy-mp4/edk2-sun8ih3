@@ -21,7 +21,7 @@
   PLATFORM_VERSION               = 0.1
   DSC_SPECIFICATION              = 0x00010019
   OUTPUT_DIRECTORY               = Build/$(PLATFORM_NAME)
-  SUPPORTED_ARCHITECTURES        = AARCH32
+  SUPPORTED_ARCHITECTURES        = ARM
   BUILD_TARGETS                  = DEBUG|RELEASE
   SKUID_IDENTIFIER               = DEFAULT
   FLASH_DEFINITION               = H3Pkg/H3Pkg.fdf
@@ -98,8 +98,8 @@
 [PcdsFeatureFlag.common]
   ## If TRUE, Graphics Output Protocol will be installed on virtual handle created by ConsplitterDxe.
   #  It could be set FALSE to save size.
-  gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
-  gEfiMdeModulePkgTokenSpaceGuid.PcdConOutUgaSupport|FALSE
+  # gEfiMdeModulePkgTokenSpaceGuid.PcdConOutGopSupport|TRUE
+  # gEfiMdeModulePkgTokenSpaceGuid.PcdConOutUgaSupport|FALSE
 
 [PcdsFixedAtBuild.common]
   gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType|4
@@ -149,7 +149,7 @@
   gEmbeddedTokenSpaceGuid.PcdPrePiStackBase|0x40280000
   gEmbeddedTokenSpaceGuid.PcdPrePiStackSize|0x00040000      # 256K stack
   gH3PkgTokenSpaceGuid.PcdUefiMemPoolBase|0x402D0000         # DXE Heap base address
-  gH3PkgTokenSpaceGuid.PcdUefiMemPoolSize|0x03300000         # UefiMemorySize, DXE heap size
+  gH3PkgTokenSpaceGuid.PcdUefiMemPoolSize|0x02D00000         # UefiMemorySize, DXE heap size
   # gArmPlatformTokenSpaceGuid.PcdCpuVectorBaseAddress|0x402C0000
 
   [PcdsDynamicDefault.common]
@@ -203,7 +203,7 @@
 
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf
 
-  H3Pkg/Drivers/InterruptDxe/InterruptDxe.inf
+  ArmPkg/Drivers/ArmGicDxe/ArmGicDxe.inf
   H3Pkg/Drivers/TimerDxe/TimerDxe.inf
 
   MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf

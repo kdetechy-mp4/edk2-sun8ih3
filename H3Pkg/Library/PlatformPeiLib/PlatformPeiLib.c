@@ -26,7 +26,10 @@ EFIAPI
 PlatformPeim(VOID)
 {
 
-  BuildFvHob(PcdGet64(PcdFvBaseAddress), PcdGet32(PcdFvSize));
+  BuildFvHob (
+    FixedPcdGet32 (PcdFvBaseAddress),
+    FixedPcdGet32 (PcdFvSize)
+  );
 
   return EFI_SUCCESS;
 }

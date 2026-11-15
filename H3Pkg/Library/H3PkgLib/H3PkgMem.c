@@ -56,7 +56,7 @@ ArmPlatformGetVirtualMemoryMap (
 {
   //TO-DO:ADD MEMORY MAP HERE
     PARM_MEMORY_REGION_DESCRIPTOR_EX MemoryDescriptorEx = gDeviceMemoryDescriptorEx;
-    ARM_MEMORY_REGION_DESCRIPTOR MemoryDescriptor[MAX_ARM_MEMORY_REGION_DESCRIPTOR_COUNT];
+    STATIC ARM_MEMORY_REGION_DESCRIPTOR MemoryDescriptor[MAX_ARM_MEMORY_REGION_DESCRIPTOR_COUNT];
     UINTN Index = 0;
 
     // Run through each memory descriptor
@@ -87,6 +87,11 @@ ArmPlatformGetVirtualMemoryMap (
 
     // Last one (terminator)
     ASSERT(Index < MAX_ARM_MEMORY_REGION_DESCRIPTOR_COUNT);
+
+    MemoryDescriptor[Index].PhysicalBase = 0;
+    MemoryDescriptor[Index].VirtualBase  = 0;
+    MemoryDescriptor[Index].Length       = 0;
+    MemoryDescriptor[Index].Attributes   = 0;
     
     *VirtualMemoryMap = MemoryDescriptor;
   //ASSERT(0);

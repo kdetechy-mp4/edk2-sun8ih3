@@ -60,7 +60,7 @@ ArmPlatformGetVirtualMemoryMap (
     UINTN Index = 0;
 
     // Run through each memory descriptor
-    while (MemoryDescriptorEx->Address != (EFI_PHYSICAL_ADDRESS)0xFFFFFFFF)
+    while (MemoryDescriptorEx->Length != 0)
     {
         switch (MemoryDescriptorEx->HobOption)
         {

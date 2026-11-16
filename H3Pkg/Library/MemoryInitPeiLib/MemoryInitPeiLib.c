@@ -42,7 +42,7 @@ VOID InitMmu(IN ARM_MEMORY_REGION_DESCRIPTOR *MemoryTable)
   // RAM (even at the top of DRAM as it is the first permanent memory
   // allocation)
   Status = ArmConfigureMmu(
-      MemoryTable, &TranslationTableBase, &TranslationTableSize);
+    MemoryTable, &TranslationTableBase, &TranslationTableSize);
 
   if (EFI_ERROR(Status)) {
     DEBUG((EFI_D_ERROR, "Error: Failed to enable MMU: %r\n", Status));
@@ -52,46 +52,41 @@ VOID InitMmu(IN ARM_MEMORY_REGION_DESCRIPTOR *MemoryTable)
 STATIC
 VOID AddHob(PARM_MEMORY_REGION_DESCRIPTOR_EX Desc)
 {
-  if (Desc->HobOption != HobOnlyNoCacheSetting) {
-    BuildResourceDescriptorHob(
-      Desc->ResourceType, Desc->ResourceAttribute, Desc->Address, Desc->Length);
-  }
+  BuildResourceDescriptorHob(
+    Desc->ResourceType, Desc->ResourceAttribute, Desc->Address, Desc->Length);
 
-  if (Desc->MemoryType != EfiConventionalMemory &&
-    (Desc->HobOption == HobOnlyNoCacheSetting ||
-    Desc->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY ||
-    Desc->ResourceType == EFI_RESOURCE_MEMORY_RESERVED ||
-    Desc->MemoryType == EfiRuntimeServicesData))
+  if (Desc->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY ||
+    Desc->MemoryType == EfiRuntimeServicesData)
   {
     BuildMemoryAllocationHob(Desc->Address, Desc->Length, Desc->MemoryType);
   }
 }
 
 /*++
+ *
+ R *outine Description:
 
-Routine Description:
 
 
+ Arguments:
 
-Arguments:
+ FileHandle  - Handle of the file being invoked.
+ PeiServices - Describes the list of possible PEI Services.
 
-  FileHandle  - Handle of the file being invoked.
-  PeiServices - Describes the list of possible PEI Services.
+ Returns:
 
-Returns:
+ Status -  EFI_SUCCESS if the boot mode could be set
 
-  Status -  EFI_SUCCESS if the boot mode could be set
-
---*/
+ --*/
 EFI_STATUS
 EFIAPI
 MemoryPeim(IN EFI_PHYSICAL_ADDRESS UefiMemoryBase, IN UINT64 UefiMemorySize)
 {
 
   PARM_MEMORY_REGION_DESCRIPTOR_EX MemoryDescriptorEx =
-      gDeviceMemoryDescriptorEx;
+  gDeviceMemoryDescriptorEx;
   ARM_MEMORY_REGION_DESCRIPTOR
-        MemoryDescriptor[MAX_ARM_MEMORY_REGION_DESCRIPTOR_COUNT];
+  MemoryDescriptor[MAX_ARM_MEMORY_REGION_DESCRIPTOR_COUNT];
   UINTN Index = 0;
 
   // Ensure PcdSystemMemorySize has been set
@@ -100,14 +95,14 @@ MemoryPeim(IN EFI_PHYSICAL_ADDRESS UefiMemoryBase, IN UINT64 UefiMemorySize)
   // Run through each memory descriptor
   while (MemoryDescriptorEx->Length != 0) {
     switch (MemoryDescriptorEx->HobOption) {
-    case AddMem:
-    case AddDev:
-    case HobOnlyNoCacheSetting:
-      AddHob(MemoryDescriptorEx);
-      break;
-    case NoHob:
-    default:
-      goto update;
+      case AddMem:
+      case AddDev:
+      case HobOnlyNoCacheSetting:
+        AddHob(MemoryDescriptorEx);
+        break;
+      case NoHob:
+      default:
+        goto update;
     }
 
     if (MemoryDescriptorEx->HobOption == HobOnlyNoCacheSetting) {
@@ -115,7 +110,7 @@ MemoryPeim(IN EFI_PHYSICAL_ADDRESS UefiMemoryBase, IN UINT64 UefiMemorySize)
       continue;
     }
 
-  update:
+    update:
     ASSERT(Index < MAX_ARM_MEMORY_REGION_DESCRIPTOR_COUNT);
 
     MemoryDescriptor[Index].PhysicalBase = MemoryDescriptorEx->Address;

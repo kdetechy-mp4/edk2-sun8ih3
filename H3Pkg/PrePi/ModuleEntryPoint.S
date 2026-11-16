@@ -77,8 +77,7 @@ _PrepareArguments:
   ldr   r1, _StackSize    /* Stack size arg1 */
 
   // Jump to PrePiCore C code
-  ldr   r4, =ASM_PFX(CEntryPoint)
-  blx   r4
+  bl    ASM_PFX(CEntryPoint)
 
 _NeverReturn:
   b _NeverReturn

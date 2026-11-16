@@ -14,16 +14,23 @@
 	GCC_ASM_EXPORT (ArmCleanInvalidateCacheRange)
 
 ArmDeInitialize:
-	// Disable Branch Prediction
-	mrc     p15, 0, r0, c1, c0, 0
-	bic     r0, r0, #0x00000800
-	mcr     p15, 0, r0, c1, c0, 0
-	dsb
-	isb
-
 	// Enter critical section: disable interrupt
 	cpsid   if
 	isb
+
+	// Turn off MMU, D-Cache, I-Cache, Branch Prediction, Alignment Check, and High Vectors
+	mrc		p15, 0, r0, c1, c0, 0           // Get control register
+	bic		r0, r0, #CTRL_M_BIT             // Disable MMU
+	bic		r0, r0, #CTRL_C_BIT             // Disable D Cache
+	bic		r0, r0, #CTRL_I_BIT             // Disable I Cache
+	bic		r0, r0, #0x00000800             // Disable Branch Prediction
+	bic		r0, r0, #(1 << 1)               // Clear SCTLR.A
+	bic		r0, r0, #(1 << 13)              // Clear SCTLR.V so VBAR is used
+	mcr		p15, 0, r0, c1, c0, 0           // Write control register
+	dsb
+	isb
+
+	// Clean and invalidate data-cache by Set/Way
 
 	// CLean, invalidate and disable data-cache
 	dsb
@@ -73,42 +80,13 @@ Skip:
 Finished:
 	dsb
 
-	// Invalidate I-Cache
-	mcr     p15, 0, R0, c7, c5, 0			// Invalidate entire instruction cache
-	dsb
-	isb
-
-	// Turn off MMU, I-Cache, D-Cache
-	mrc		p15, 0, r0, c1, c0, 0           // Get control register
-	bic		r0, r0, #CTRL_C_BIT             // Disable D Cache
-	bic		r0, r0, #CTRL_I_BIT             // Disable I Cache
-	bic		r0, r0, #CTRL_M_BIT             // Disable MMU
-	mcr		p15, 0, r0, c1, c0, 0           // Write control register
-	dsb
-	isb
-
-	// Flush TLB
+	// Invalidate I-Cache, Branch Predictor, and TLB
 	mov     r0, #0
-	mcr     p15, 0, r0, c8, c7, 0
-	mcr     p15, 0, R9, c7, c5, 6			// BPIALL Invalidate Branch predictor array. R9 == NoOp
+	mcr     p15, 0, r0, c7, c5, 0			// ICIALLU: Invalidate entire instruction cache
+	mcr     p15, 0, r0, c7, c5, 6			// BPIALL: Invalidate Branch predictor array
+	mcr     p15, 0, r0, c8, c7, 0			// TLBIALL: Flush TLB
 	dsb
 	isb
 
 	// Return
-	bx		lr
-
-ArmCleanInvalidateCacheRange:
-	// cache-ops.S @ lk
-	dsb
-	add 	r2, r0, r1						// Calculate the end address
-	bic 	r0, #(CACHE_LINE-1)				// Align start with cache line
-ArmCleanInvalidateCacheRange0:
-	mcr		p15, 0, r0, c7, c14, 1			// Clean & invalidate cache to PoC by MVA
-	add		r0, r0, #CACHE_LINE
-	cmp 	r0, r2
-	blo		ArmCleanInvalidateCacheRange0
-
-	mov		r0, #0
-	dsb
-
 	bx		lr

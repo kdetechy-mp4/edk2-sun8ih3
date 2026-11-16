@@ -126,11 +126,23 @@ DisplayQueryMode(
   return EFI_SUCCESS;
 }
 
+STATIC VOID FbDisableDebugConsole(IN EFI_GRAPHICS_OUTPUT_PROTOCOL *This)
+{
+  volatile UINT32 *Magic = (volatile UINT32 *)(UINTN)(
+    This->Mode->FrameBufferBase + This->Mode->FrameBufferSize
+  );
+  if (*Magic != 0x474F5021U) {
+    *Magic = 0x474F5021U;
+    WriteBackDataCacheRange((VOID *)(UINTN)Magic, sizeof(UINT32));
+  }
+}
+
 STATIC
 EFI_STATUS
 EFIAPI
 DisplaySetMode(IN EFI_GRAPHICS_OUTPUT_PROTOCOL *This, IN UINT32 ModeNumber)
 {
+  FbDisableDebugConsole(This);
   return EFI_SUCCESS;
 }
 
@@ -152,16 +164,29 @@ DisplayBlt(
   // buffer. We would not want a timer based event (Cursor, ...) to come in
   // while we are doing this operation.
   //
+  FbDisableDebugConsole(This);
+
   Tpl    = gBS->RaiseTPL(TPL_NOTIFY);
   Status = FrameBufferBlt(
-      mFrameBufferBltLibConfigure, BltBuffer, BltOperation, SourceX, SourceY,
-      DestinationX, DestinationY, Width, Height, Delta);
+    mFrameBufferBltLibConfigure, BltBuffer, BltOperation, SourceX, SourceY,
+    DestinationX, DestinationY, Width, Height, Delta);
   gBS->RestoreTPL(Tpl);
 
-  WriteBackDataCacheRange (
-    (VOID *)(UINTN)This->Mode->FrameBufferBase,
-                           This->Mode->FrameBufferSize
-  );
+  if (!RETURN_ERROR(Status) && (BltOperation != EfiBltVideoToBltBuffer)) {
+    UINTN StrideBytes = This->Mode->Info->PixelsPerScanLine * FB_BYTES_PER_PIXEL;
+    UINTN Offset      = DestinationY * StrideBytes;
+    UINTN FlushBytes  = Height * StrideBytes;
+
+    if (Offset < This->Mode->FrameBufferSize) {
+      if (Offset + FlushBytes > This->Mode->FrameBufferSize) {
+        FlushBytes = This->Mode->FrameBufferSize - Offset;
+      }
+      WriteBackDataCacheRange (
+        (VOID *)((UINTN)This->Mode->FrameBufferBase + Offset),
+                               FlushBytes
+      );
+    }
+  }
 
   return RETURN_ERROR(Status) ? EFI_INVALID_PARAMETER : EFI_SUCCESS;
 }

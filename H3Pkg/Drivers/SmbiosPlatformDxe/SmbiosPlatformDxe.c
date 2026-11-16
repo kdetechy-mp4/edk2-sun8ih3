@@ -142,7 +142,7 @@ CHAR8 *mBIOSInfoType0Strings[] = {""Allwinner H3 UEFI Port", // Vendor String
 */
 CHAR8 *mBIOSInfoType0Strings[] = {"Allwinner H3 UEFI Port", // Vendor String
                                   "EDK2", // BiosVersion String
-                                  NULL, // BiosReleaseDate String
+                                  "01/01/2026", // BiosReleaseDate String
                                   NULL};
 
 /***********************************************************************

@@ -32,6 +32,7 @@
   RegisterFilterLib|MdePkg/Library/RegisterFilterLibNull/RegisterFilterLibNull.inf
   VariablePolicyHelperLib|MdeModulePkg/Library/VariablePolicyHelperLib/VariablePolicyHelperLib.inf
   VariableFlashInfoLib|MdeModulePkg/Library/BaseVariableFlashInfoLib/BaseVariableFlashInfoLib.inf
+  ClockLib|H3Pkg/Library/ClockLib/ClockLib.inf
 
 [LibraryClasses.common.DXE_RUNTIME_DRIVER]
   VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLibRuntimeDxe.inf
@@ -153,10 +154,10 @@
   # gArmPlatformTokenSpaceGuid.PcdCpuVectorBaseAddress|0x402C0000
 
   [PcdsDynamicDefault.common]
-  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|0 # /8 = column
-  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|0 #/19 = row
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|0
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|0
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|1280 # /8 = column
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|720 #/19 = row
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|1280
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|720
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn|0
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow|0
   gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn|0
@@ -211,7 +212,7 @@
   #
   # SoC Drivers
   #
-  # OrangePiZero3Pkg/Drivers/SunxiGpioDxe/SunxiGpioDxe.inf
+  H3Pkg/Drivers/GpioDxe/GpioDxe.inf
   # OrangePiZero3Pkg/Drivers/HeartbeatDxe/HeartbeatDxe.inf
 
   MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
@@ -231,7 +232,12 @@
   #
   # USB Host Support
   #
+  H3Pkg/Drivers/UsbHostDxe/UsbHostDxe.inf
+
+  MdeModulePkg/Bus/Pci/NonDiscoverablePciDeviceDxe/NonDiscoverablePciDeviceDxe.inf
+  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
 
   #
   # USB Mass Storage Support

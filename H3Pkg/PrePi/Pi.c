@@ -57,12 +57,14 @@ VOID PlatformInit(VOID)
 
 STATIC VOID UartInit(VOID)
 {
+  // Clear framebuffer console magic so SerialPortInitialize() resets screen & cursor
+  MmioWrite32(FixedPcdGet32(PcdMipiFrameBufferAddress) + (1280U * 720U * 4U), 0);
   SerialPortInitialize();
 
   DEBUG((EFI_D_INFO, "\nTianoCore on OrangePi PC Plus (ARM)\n"));
   DEBUG(
-      (EFI_D_INFO, "Firmware version %s built %a %a\n\n",
-       (CHAR16 *)PcdGetPtr(PcdFirmwareVersionString), __TIME__, __DATE__));
+    (EFI_D_INFO, "Firmware version %s built %a %a\n\n",
+     (CHAR16 *)PcdGetPtr(PcdFirmwareVersionString), __TIME__, __DATE__));
 }
 
 STATIC VOID FbProgressBar(UINT32 StartRow, UINT32 Rows, UINT32 ArgbColor)
@@ -99,6 +101,9 @@ VOID Main(IN VOID *StackBase, IN UINTN StackSize)
   // Initialize (fake) UART.
   UartInit();
 
+  // 1. GREEN bar (rows 0..19): PrePi C entry reached (MMU/D-cache currently OFF)
+  FbProgressBar(0, 20, 0xFF00FF00);
+
   // Declare UEFI region
   MemoryBase     = PcdGet64(PcdSystemMemoryBase);
   MemorySize     = PcdGet64(PcdSystemMemorySize);
@@ -115,8 +120,8 @@ VOID Main(IN VOID *StackBase, IN UINTN StackSize)
 
   // Set up HOB
   HobList = HobConstructor(
-      (VOID *)UefiMemoryBase, UefiMemorySize, (VOID *)UefiMemoryBase,
-      StackBase);
+    (VOID *)UefiMemoryBase, UefiMemorySize, (VOID *)UefiMemoryBase,
+                           (VOID *)(UefiMemoryBase + UefiMemorySize));
 
   PrePeiSetHobList(HobList);
 
@@ -125,10 +130,9 @@ VOID Main(IN VOID *StackBase, IN UINTN StackSize)
 
   if (EFI_ERROR(Status)) {
     DEBUG((EFI_D_ERROR, "Failed to configure MMU\n"));
+    WriteBackDataCacheRange((VOID *)(UINTN)FixedPcdGet32(PcdMipiFrameBufferAddress), 1280 * 40 * 4);
     CpuDeadLoop();
   }
-
-  DEBUG((EFI_D_LOAD | EFI_D_INFO, "MMU configured from device config\n"));
 
   // Add HOBs
   BuildStackHob((UINTN)StackBase, StackSize);

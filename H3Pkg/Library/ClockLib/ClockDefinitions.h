@@ -1,0 +1,111 @@
+#ifndef _CLOCK_DEFINITIONS_H_
+#define _CLOCK_DEFINITIONS_H_
+
+#define GATE(o, m)   { (o), (m) }
+#define RESET(o, m)  { (o), (m) }
+#define GATE_DUMMY   { 0, 0 }
+
+typedef struct {
+    UINT32  Offset;   // from H618_CCM_BASE; 0 = no entry
+    UINT32  Mask;
+} CCM_REG_BIT;
+
+STATIC CONST CCM_REG_BIT  mGates[] = {
+    [CLK_PLL_PERIPH0]	= GATE(0x028, BIT31),
+
+    [CLK_BUS_MMC0]		= GATE(0x060, BIT8),
+    [CLK_BUS_MMC1]		= GATE(0x060, BIT9),
+    [CLK_BUS_MMC2]		= GATE(0x060, BIT10),
+    [CLK_BUS_NAND]		= GATE(0x060, BIT13),
+    [CLK_BUS_EMAC]		= GATE(0x060, BIT17),
+    [CLK_BUS_SPI0]		= GATE(0x060, BIT20),
+    [CLK_BUS_SPI1]		= GATE(0x060, BIT21),
+    [CLK_BUS_OTG]		= GATE(0x060, BIT23),
+    [CLK_BUS_EHCI0]		= GATE(0x060, BIT24),
+    [CLK_BUS_EHCI1]		= GATE(0x060, BIT25),
+    [CLK_BUS_EHCI2]		= GATE(0x060, BIT26),
+    [CLK_BUS_EHCI3]		= GATE(0x060, BIT27),
+    [CLK_BUS_OHCI0]		= GATE(0x060, BIT28),
+    [CLK_BUS_OHCI1]		= GATE(0x060, BIT29),
+    [CLK_BUS_OHCI2]		= GATE(0x060, BIT30),
+    [CLK_BUS_OHCI3]		= GATE(0x060, BIT31),
+
+    [CLK_BUS_TCON0]		= GATE(0x064, BIT3),
+    [CLK_BUS_TCON1]		= GATE(0x064, BIT4),
+    [CLK_BUS_HDMI]		= GATE(0x064, BIT11),
+    [CLK_BUS_DE]		= GATE(0x064, BIT12),
+
+    [CLK_BUS_PIO]		= GATE(0x068, BIT5),
+
+    [CLK_BUS_I2C0]		= GATE(0x06c, BIT0),
+    [CLK_BUS_I2C1]		= GATE(0x06c, BIT1),
+    [CLK_BUS_I2C2]		= GATE(0x06c, BIT2),
+    [CLK_BUS_UART0]		= GATE(0x06c, BIT16),
+    [CLK_BUS_UART1]		= GATE(0x06c, BIT17),
+    [CLK_BUS_UART2]		= GATE(0x06c, BIT18),
+    [CLK_BUS_UART3]		= GATE(0x06c, BIT19),
+
+    [CLK_BUS_EPHY]		= GATE(0x070, BIT0),
+
+    [CLK_NAND]		= GATE(0x080, BIT31),
+    [CLK_SPI0]		= GATE(0x0a0, BIT31),
+    [CLK_SPI1]		= GATE(0x0a4, BIT31),
+
+    [CLK_USB_PHY0]		= GATE(0x0cc, BIT8),
+    [CLK_USB_PHY1]		= GATE(0x0cc, BIT9),
+    [CLK_USB_PHY2]		= GATE(0x0cc, BIT10),
+    [CLK_USB_PHY3]		= GATE(0x0cc, BIT11),
+    [CLK_USB_OHCI0]		= GATE(0x0cc, BIT16),
+    [CLK_USB_OHCI1]		= GATE(0x0cc, BIT17),
+    [CLK_USB_OHCI2]		= GATE(0x0cc, BIT18),
+    [CLK_USB_OHCI3]		= GATE(0x0cc, BIT19),
+
+    [CLK_DE]		= GATE(0x104, BIT31),
+    [CLK_TCON0]		= GATE(0x118, BIT31),
+
+    [CLK_HDMI]		= GATE(0x150, BIT31),
+    [CLK_HDMI_DDC]		= GATE(0x154, BIT31),
+};
+
+
+STATIC CONST CCM_REG_BIT  mResets[] = {
+    [RST_USB_PHY0]		= RESET(0x0cc, BIT0),
+    [RST_USB_PHY1]		= RESET(0x0cc, BIT1),
+    [RST_USB_PHY2]		= RESET(0x0cc, BIT2),
+    [RST_USB_PHY3]		= RESET(0x0cc, BIT3),
+
+    [RST_BUS_MMC0]		= RESET(0x2c0, BIT8),
+    [RST_BUS_MMC1]		= RESET(0x2c0, BIT9),
+    [RST_BUS_MMC2]		= RESET(0x2c0, BIT10),
+    [RST_BUS_NAND]		= RESET(0x2c0, BIT13),
+    [RST_BUS_EMAC]		= RESET(0x2c0, BIT17),
+    [RST_BUS_SPI0]		= RESET(0x2c0, BIT20),
+    [RST_BUS_SPI1]		= RESET(0x2c0, BIT21),
+    [RST_BUS_OTG]		= RESET(0x2c0, BIT23),
+    [RST_BUS_EHCI0]		= RESET(0x2c0, BIT24),
+    [RST_BUS_EHCI1]		= RESET(0x2c0, BIT25),
+    [RST_BUS_EHCI2]		= RESET(0x2c0, BIT26),
+    [RST_BUS_EHCI3]		= RESET(0x2c0, BIT27),
+    [RST_BUS_OHCI0]		= RESET(0x2c0, BIT28),
+    [RST_BUS_OHCI1]		= RESET(0x2c0, BIT29),
+    [RST_BUS_OHCI2]		= RESET(0x2c0, BIT30),
+    [RST_BUS_OHCI3]		= RESET(0x2c0, BIT31),
+
+    [RST_BUS_TCON0]		= RESET(0x2c4, BIT3),
+    [RST_BUS_TCON1]		= RESET(0x2c4, BIT4),
+    [RST_BUS_HDMI0]		= RESET(0x2c4, BIT10),
+    [RST_BUS_HDMI1]		= RESET(0x2c4, BIT11),
+    [RST_BUS_DE]		= RESET(0x2c4, BIT12),
+
+    [RST_BUS_EPHY]		= RESET(0x2c8, BIT2),
+
+    [RST_BUS_I2C0]		= RESET(0x2d8, BIT0),
+    [RST_BUS_I2C1]		= RESET(0x2d8, BIT1),
+    [RST_BUS_I2C2]		= RESET(0x2d8, BIT2),
+    [RST_BUS_UART0]		= RESET(0x2d8, BIT16),
+    [RST_BUS_UART1]		= RESET(0x2d8, BIT17),
+    [RST_BUS_UART2]		= RESET(0x2d8, BIT18),
+    [RST_BUS_UART3]		= RESET(0x2d8, BIT19),
+};
+
+#endif // _CLOCK_DEFINITIONS_H_

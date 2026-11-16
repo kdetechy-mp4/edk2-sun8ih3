@@ -54,10 +54,26 @@ NumBlocks     = 0x200
 # Implement the Linux kernel header layout so that the loader will identify
 # it as something bootable, and execute it with a FDT pointer in x0 or r2.
 #
-0x00000000|0x00200000
+0x00000000|0x00001000
+DATA = {
+  # 0x00..0x1C: 8x ARM32 NOP (mov r0, r0 = 0xe1a00000)
+  0x00, 0x00, 0xa0, 0xe1,  0x00, 0x00, 0xa0, 0xe1,
+  0x00, 0x00, 0xa0, 0xe1,  0x00, 0x00, 0xa0, 0xe1,
+  0x00, 0x00, 0xa0, 0xe1,  0x00, 0x00, 0xa0, 0xe1,
+  0x00, 0x00, 0xa0, 0xe1,  0x00, 0x00, 0xa0, 0xe1,
+  # 0x20: b 0x1000 (jump to FVMAIN_COMPACT ZeroVector[0], patched by GenFv with bl _ModuleEntryPoint)
+  0xf6, 0x03, 0x00, 0xea,
+  # 0x24: Linux ARM zImage magic (0x016f2818)
+  0x18, 0x28, 0x6f, 0x01,
+  # 0x28: zImage start (0x00000000)
+  0x00, 0x00, 0x00, 0x00,
+  # 0x2C: zImage end (0x00200000)
+  0x00, 0x00, 0x20, 0x00
+}
+
+0x00001000|0x001FF000
 gArmTokenSpaceGuid.PcdFvBaseAddress|gArmTokenSpaceGuid.PcdFvSize
 FV = FVMAIN_COMPACT
-
 
 ################################################################################
 #
@@ -136,6 +152,7 @@ READ_LOCK_STATUS   = TRUE
   #
   # GPIO
   #
+  INF H3Pkg/Drivers/GpioDxe/GpioDxe.inf
 
   #
   # Virtual Keyboard
@@ -152,7 +169,11 @@ READ_LOCK_STATUS   = TRUE
   #
   # USB Host Support
   #
+  INF H3Pkg/Drivers/UsbHostDxe/UsbHostDxe.inf
+  INF MdeModulePkg/Bus/Pci/NonDiscoverablePciDeviceDxe/NonDiscoverablePciDeviceDxe.inf
+  INF MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
   INF MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+  INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
 
   #
   # USB Mass Storage Support

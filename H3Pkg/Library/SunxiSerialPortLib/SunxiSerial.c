@@ -9,46 +9,166 @@
 #include <Library/SerialPortLib.h>
 #include <Library/IoLib.h>
 #include <Library/PcdLib.h>
+#include <Resources/font5x12.h>
 
 #include "Hw.h"
 
-/**
-  Initialize the serial device hardware.
+#define FB_ADDR       0x7E000000U
+#define FB_WIDTH      1280U
+#define FB_HEIGHT     720U
+#define FB_STATE_ADDR (FB_ADDR + FB_WIDTH * FB_HEIGHT * 4U)
+#define FB_STATE_MAGIC 0x46424442U
+#define FB_STATE_DISABLED 0x474F5021U
 
-  If no initialization is required, then return RETURN_SUCCESS.
-  If the serial device was successfully initialized, then return RETURN_SUCCESS.
-  If the serial device could not be initialized, then return RETURN_DEVICE_ERROR.
+#define CHAR_W        (FONT_WIDTH * SCALE_FACTOR + 2U)   /* 12 px */
+#define CHAR_H        (FONT_HEIGHT * SCALE_FACTOR + 4U)  /* 28 px */
+#define FB_COLS       (FB_WIDTH / CHAR_W)                /* 106 cols */
+#define FB_ROWS       (FB_HEIGHT / CHAR_H)               /* 25 rows */
 
-  @retval RETURN_SUCCESS        The serial device was initialized.
-  @retval RETURN_DEVICE_ERROR   The serial device could not be initialized.
+#define FB_FG_COLOR   0xFFE0E0E0U
+#define FB_BG_COLOR   0xFF000000U
 
-**/
+typedef struct {
+  UINT32 Magic;
+  UINT32 Col;
+  UINT32 Row;
+} FB_CONSOLE_STATE;
+
+STATIC VOID FbFlushRange(UINTN StartAddr, UINTN Size)
+{
+  UINTN Addr = StartAddr & ~63U;
+  UINTN End  = StartAddr + Size;
+
+  __asm__ volatile ("dsb" ::: "memory");
+  while (Addr < End) {
+    __asm__ volatile ("mcr p15, 0, %0, c7, c10, 1" :: "r"(Addr) : "memory");
+    Addr += 64;
+  }
+  __asm__ volatile ("dsb" ::: "memory");
+}
+
+STATIC VOID FbClearRows(UINT32 StartY, UINT32 Height)
+{
+  volatile UINT32 *Fb = (volatile UINT32 *)(UINTN)FB_ADDR + (StartY * FB_WIDTH);
+  UINT32 Count = Height * FB_WIDTH;
+  UINT32 i;
+
+  for (i = 0; i < Count; i++) {
+    Fb[i] = FB_BG_COLOR;
+  }
+  FbFlushRange((UINTN)Fb, Count * 4U);
+}
+
+STATIC VOID FbEnsureInit(VOID)
+{
+  volatile FB_CONSOLE_STATE *State = (volatile FB_CONSOLE_STATE *)(UINTN)FB_STATE_ADDR;
+
+  if (State->Magic == FB_STATE_DISABLED) {
+    return;
+  }
+
+  if (State->Magic != FB_STATE_MAGIC) {
+    FbClearRows(0, FB_HEIGHT);
+    State->Col   = 0;
+    State->Row   = 0;
+    State->Magic = FB_STATE_MAGIC;
+    FbFlushRange((UINTN)State, sizeof(FB_CONSOLE_STATE));
+  }
+}
+
+STATIC VOID FbNewLine(volatile FB_CONSOLE_STATE *State)
+{
+  State->Col = 0;
+  State->Row++;
+  if (State->Row >= FB_ROWS) {
+    State->Row = 0;
+  }
+  FbClearRows(State->Row * CHAR_H, CHAR_H);
+}
+
+STATIC VOID FbPutChar(UINT8 Ch)
+{
+  volatile FB_CONSOLE_STATE *State = (volatile FB_CONSOLE_STATE *)(UINTN)FB_STATE_ADDR;
+  volatile UINT32 *Fb = (volatile UINT32 *)(UINTN)FB_ADDR;
+  UINT32 BaseX;
+  UINT32 BaseY;
+  UINT32 Word0;
+  UINT32 Word1;
+  UINT32 R;
+  UINT32 C;
+  UINT32 Sy;
+  UINT32 Sx;
+  UINT32 Index;
+
+  FbEnsureInit();
+  if (State->Magic == FB_STATE_DISABLED) {
+    return;
+  }
+
+  if (Ch == '\r') {
+    State->Col = 0;
+    FbFlushRange((UINTN)State, sizeof(FB_CONSOLE_STATE));
+    return;
+  }
+
+  if (Ch == '\n') {
+    FbNewLine(State);
+    FbFlushRange((UINTN)State, sizeof(FB_CONSOLE_STATE));
+    return;
+  }
+
+  if (Ch == '\t') {
+    UINT32 Spaces = 4U - (State->Col % 4U);
+    while (Spaces--) {
+      FbPutChar(' ');
+    }
+    return;
+  }
+
+  if (State->Col >= FB_COLS) {
+    FbNewLine(State);
+  }
+
+  if (Ch < 0x20 || Ch > 0x7F) {
+    Ch = ' ';
+  }
+
+  Index = (UINT32)(Ch - 0x20) * 2U;
+  Word0 = font5x12[Index];
+  Word1 = font5x12[Index + 1U];
+
+  BaseX = State->Col * CHAR_W;
+  BaseY = State->Row * CHAR_H;
+
+  for (R = 0; R < FONT_HEIGHT; R++) {
+    UINT32 RowBits = (R < 6U) ? ((Word0 >> (R * 5U)) & 0x1FU)
+    : ((Word1 >> ((R - 6U) * 5U)) & 0x1FU);
+    for (C = 0; C < FONT_WIDTH; C++) {
+      UINT32 Color = ((RowBits >> C) & 1U) ? FB_FG_COLOR : FB_BG_COLOR;
+      for (Sy = 0; Sy < SCALE_FACTOR; Sy++) {
+        UINT32 Py = BaseY + (R * SCALE_FACTOR) + Sy;
+        for (Sx = 0; Sx < SCALE_FACTOR; Sx++) {
+          UINT32 Px = BaseX + (C * SCALE_FACTOR) + Sx;
+          Fb[Py * FB_WIDTH + Px] = Color;
+        }
+      }
+    }
+  }
+
+  FbFlushRange((UINTN)&Fb[BaseY * FB_WIDTH], CHAR_H * FB_WIDTH * 4U);
+  State->Col++;
+  FbFlushRange((UINTN)State, sizeof(FB_CONSOLE_STATE));
+}
+
 RETURN_STATUS EFIAPI SerialPortInitialize(VOID)
 {
-  // Nothing to do here, clocks were initialized by SPL.
+  FbEnsureInit();
   return EFI_SUCCESS;
 }
 
-/**
-  Write data from buffer to serial device.
-
-  Writes NumberOfBytes data bytes from Buffer to the serial device.
-  The number of bytes actually written to the serial device is returned.
-  If the return value is less than NumberOfBytes, then the write operation failed.
-  If Buffer is NULL, then ASSERT().
-  If NumberOfBytes is zero, then return 0.
-
-  @param  Buffer           Pointer to the data buffer to be written.
-  @param  NumberOfBytes    Number of bytes to written to the serial device.
-
-  @retval 0                NumberOfBytes is 0.
-  @retval >0               The number of bytes written to the serial device.
-                           If this value is less than NumberOfBytes, then the write operation failed.
-
-**/
 UINTN EFIAPI SerialPortWrite(
-    IN UINT8 *Buffer,
-    IN UINTN NumberOfBytes)
+  IN UINT8 *Buffer,
+  IN UINTN NumberOfBytes)
 {
   UINTN i;
 
@@ -59,6 +179,7 @@ UINTN EFIAPI SerialPortWrite(
     }
 
     MmioWrite32(UART_THR, Buffer[i]);
+    FbPutChar(Buffer[i]);
   }
 
   return NumberOfBytes;
@@ -176,15 +297,31 @@ RETURN_STATUS EFIAPI SerialPortGetControl(OUT UINT32 *Control)
 
 **/
 RETURN_STATUS EFIAPI SerialPortSetAttributes(
-    IN OUT UINT64 *BaudRate,
-    IN OUT UINT32 *ReceiveFifoDepth,
-    IN OUT UINT32 *Timeout,
-    IN OUT EFI_PARITY_TYPE *Parity,
-    IN OUT UINT8 *DataBits,
-    IN OUT EFI_STOP_BITS_TYPE *StopBits)
+  IN OUT UINT64 *BaudRate,
+  IN OUT UINT32 *ReceiveFifoDepth,
+  IN OUT UINT32 *Timeout,
+  IN OUT EFI_PARITY_TYPE *Parity,
+  IN OUT UINT8 *DataBits,
+  IN OUT EFI_STOP_BITS_TYPE *StopBits)
 {
-  // TODO: implement this
-  // serial port is initialized by SPL
+  if (*BaudRate == 0) {
+    *BaudRate = 115200;
+  }
+  if (*ReceiveFifoDepth == 0) {
+    *ReceiveFifoDepth = 64;
+  }
+  if (*Timeout == 0) {
+    *Timeout = 1000000;
+  }
+  if (*Parity == DefaultParity) {
+    *Parity = NoParity;
+  }
+  if (*DataBits == 0) {
+    *DataBits = 8;
+  }
+  if (*StopBits == DefaultStopBits) {
+    *StopBits = OneStopBit;
+  }
 
   // Enable FIFO to prevent losing data on input
   MmioWrite32(UART_FCR, UART_FCR_ENABLE_FIFO);

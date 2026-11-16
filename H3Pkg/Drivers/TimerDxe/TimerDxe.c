@@ -312,6 +312,8 @@ TimerInterruptHandler (
     ArmInstructionSynchronizationBarrier();
   }
 
+  gInterrupt->EndOfInterrupt(gInterrupt, Source);
+
   gBS->RestoreTPL(OriginalTPL);
 }
 
@@ -347,6 +349,7 @@ TimerInitialize(
   ASSERT_EFI_ERROR(Status);
 
   // Everything is ready, unmask and enable timer interrupts
+  Sun8iTimerClearInterruptStatus();
   MmioOr32(SUNXI_TIMER_BASE + SUNXI_TIMER_IRQEN, (1 << INTERRUPT_TIMER));
 
   // Register for an ExitBootServicesEvent

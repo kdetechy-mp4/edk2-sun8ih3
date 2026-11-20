@@ -101,9 +101,6 @@ VOID Main(IN VOID *StackBase, IN UINTN StackSize)
   // Initialize (fake) UART.
   UartInit();
 
-  // 1. GREEN bar (rows 0..19): PrePi C entry reached (MMU/D-cache currently OFF)
-  FbProgressBar(0, 20, 0xFF00FF00);
-
   // Declare UEFI region
   MemoryBase     = PcdGet64(PcdSystemMemoryBase);
   MemorySize     = PcdGet64(PcdSystemMemorySize);

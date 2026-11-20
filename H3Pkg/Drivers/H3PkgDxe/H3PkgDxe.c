@@ -28,8 +28,10 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiLib.h>
 
+#include <Library/DxeServicesTableLib.h>
 #include <Protocol/Cpu.h>
 #include <Protocol/DevicePathFromText.h>
+#include <Protocol/NonDiscoverableDevice.h>
 #include <Protocol/EmbeddedGpio.h>
 #include <Protocol/LoadedImage.h>
 #include <Protocol/PlatformBootManager.h>
@@ -73,9 +75,9 @@ InitPeripherals (
 STATIC
 VOID
 OnEndOfDxe (
-  IN EFI_EVENT  Event,
-  IN VOID       *Context
-  )
+    IN EFI_EVENT  Event,
+    IN VOID       *Context
+)
 {
 }
 

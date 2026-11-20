@@ -238,7 +238,7 @@
   # IO is mapped to memory space, so we use the same size of
   # PcdPrePiCpuMemorySize
   #
-  ## gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize|44
+  gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize|32
   gEmbeddedTokenSpaceGuid.PcdPrePiStackBase|0x41000000
   gEmbeddedTokenSpaceGuid.PcdPrePiStackSize|0x00040000      # 256K stack
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1000000

@@ -63,16 +63,10 @@
   gArmTokenSpaceGuid.PcdFvSize
   gArmTokenSpaceGuid.PcdFdBaseAddress
   gArmTokenSpaceGuid.PcdFdSize
+  gArmPlatformTokenSpaceGuid.PcdCPUCorePrimaryStackSize
   gArmPlatformTokenSpaceGuid.PcdCoreCount
 
   gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize
-
-[Pcd]
-  gArmTokenSpaceGuid.PcdSystemMemoryBase
-  gArmTokenSpaceGuid.PcdSystemMemorySize
-
-[Pcd]
-  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString
 
   gH3PkgTokenSpaceGuid.PcdUefiMemPoolBase
   gH3PkgTokenSpaceGuid.PcdUefiMemPoolSize
@@ -80,3 +74,9 @@
   gH3PkgTokenSpaceGuid.PcdMipiFrameBufferWidth
   gH3PkgTokenSpaceGuid.PcdMipiFrameBufferHeight
   gH3PkgTokenSpaceGuid.PcdMipiFrameBufferPixelBpp
+
+[Pcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString
+
+  gArmTokenSpaceGuid.PcdSystemMemoryBase
+  gArmTokenSpaceGuid.PcdSystemMemorySize

@@ -10,6 +10,23 @@
 // On Allwinner H3, SIDDQ is BIT1 (on H616 it was BIT3)
 #define PHY_CTL_H3_SIDDQ         BIT1
 
+// Shared USB PHY control register (sun8i-h3 uses A33 layout)
+#define USB_PHY_CTRL_BASE        0x01C19400U
+#define REG_PHYCTL_A33           0x10U
+#define REG_PHY_OTGCTL           0x20U
+#define OTGCTL_ROUTE_MUSB        BIT0
+#define PHYCTL_DATA              BIT7
+#define PHY_RES45_CAL_EN         0x0CU
+#define PHY_RES45_CAL_DATA       BIT0
+#define PHY_RES45_CAL_LEN        1
+#define PHY_TX_AMPLITUDE_TUNE    0x20U
+#define PHY_TX_RATE              BIT4
+#define PHY_TX_MAGNITUDE         BIT2
+#define PHY_TX_AMPLITUDE_LEN     5
+#define PHY_DISCON_TH_SEL        0x2AU
+#define H3_DISC_THRESH           3
+#define PHY_DISCON_TH_LEN        2
+
 #define PMU_AHB_ICHR8_EN         BIT10
 #define PMU_AHB_INCR4_BURST_EN   BIT9
 #define PMU_AHB_INCRX_ALIGN_EN   BIT8

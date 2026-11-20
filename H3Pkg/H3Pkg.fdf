@@ -157,7 +157,7 @@ READ_LOCK_STATUS   = TRUE
   #
   # Virtual Keyboard
   #
-  INF EmbeddedPkg/Drivers/VirtualKeyboardDxe/VirtualKeyboardDxe.inf
+  # INF EmbeddedPkg/Drivers/VirtualKeyboardDxe/VirtualKeyboardDxe.inf
 
   #
   # Platform Dxes
@@ -207,8 +207,15 @@ READ_LOCK_STATUS   = TRUE
   #
   INF MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
   INF MdeModulePkg/Universal/Acpi/AcpiPlatformDxe/AcpiPlatformDxe.inf
-  INF MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
-  # INF RuleOverride = ACPITABLE H3Pkg/AcpiTables/AcpiTables.inf
+
+  FILE FREEFORM = 7E374E25-8E01-4FEE-87F2-390C23C606CD {
+    SECTION RAW = H3Pkg/AcpiTables/APIC.aml
+    # SECTION RAW = H3Pkg/AcpiTables/DBG2.aml
+    SECTION RAW = H3Pkg/AcpiTables/DSDT_minimal.aml
+    SECTION RAW = H3Pkg/AcpiTables/FACP.aml
+    SECTION RAW = H3Pkg/AcpiTables/GTDT.aml
+    SECTION UI = "AcpiTables"
+  }
 
   #
   # SMBIOS Support

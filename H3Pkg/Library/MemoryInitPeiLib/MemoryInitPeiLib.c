@@ -52,11 +52,16 @@ VOID InitMmu(IN ARM_MEMORY_REGION_DESCRIPTOR *MemoryTable)
 STATIC
 VOID AddHob(PARM_MEMORY_REGION_DESCRIPTOR_EX Desc)
 {
-  BuildResourceDescriptorHob(
-    Desc->ResourceType, Desc->ResourceAttribute, Desc->Address, Desc->Length);
+  if (Desc->HobOption != HobOnlyNoCacheSetting) {
+    BuildResourceDescriptorHob(
+      Desc->ResourceType, Desc->ResourceAttribute, Desc->Address, Desc->Length);
+  }
 
-  if (Desc->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY ||
-    Desc->MemoryType == EfiRuntimeServicesData)
+  if (Desc->MemoryType != EfiConventionalMemory &&
+    (Desc->HobOption == HobOnlyNoCacheSetting ||
+    Desc->ResourceType == EFI_RESOURCE_SYSTEM_MEMORY ||
+    Desc->ResourceType == EFI_RESOURCE_MEMORY_RESERVED ||
+    Desc->MemoryType == EfiRuntimeServicesData))
   {
     BuildMemoryAllocationHob(Desc->Address, Desc->Length, Desc->MemoryType);
   }
